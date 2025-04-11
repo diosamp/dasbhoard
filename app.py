@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-import requests
-import streamlit as st
-
-res = requests.get('https://cloud.chaoslabs.co/query/api/ostium/unrealized-pnl')
-
-res = res.json()
-st.metric('total unrealized PNL', sum([res['unrealizedPnlPairs'][pair] for pair in res['unrealizedPnlPairs']]))
-st.bar_chart(res['unrealizedPnlPairs'])
-st.write(res)
-=======
 import streamlit as st
 from src.data_processing import load_open_trades, clean_open_trades, get_open_trades_uPnl
 from src.viz import plt_bar_oi_isBuy, plt_bar_oiImbalance
@@ -66,4 +55,3 @@ def main():
 
 if __name__ == '__main__':
     main()
->>>>>>> master
