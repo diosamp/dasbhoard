@@ -46,6 +46,11 @@ def main():
         df[['pair', 'isBuy', 'trader', 'notional', 'collateral', 'leverage', 'uPnl', 'openPrice', 'lastPrice']], 
         width=1200  # Adjust this value as needed
     )
+
+    # Display PnL by trader
+    st.subheader("PnL by Trader")
+    trader_pnl = df[['trader', 'uPnl']].groupby('trader').sum().reset_index().sort_values('uPnl', ascending=False)
+    st.dataframe(trader_pnl, width=800)
     
     # Auto-refresh the app only if the checkbox is checked
     if auto_refresh:

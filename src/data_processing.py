@@ -169,12 +169,13 @@ def latest_prices() -> pd.DataFrame:
 
     df_prices = df[['pair', 'mid']].copy()
     df_prices.rename(columns={'mid': 'lastPrice'}, inplace=True)
+    df_prices['lastPrice'] = df_prices['lastPrice'].astype(float)
 
     return df_prices
 
 def compute_uPnl(openPrice, lastPrice, isBuy, notional):
     abs_uPnl = (lastPrice - openPrice) / openPrice * notional
-    direction_factor = 1 if isBuy else 0
+    direction_factor = 1 if isBuy else -1
     return direction_factor * abs_uPnl
 
 def get_open_trades_uPnl(df_trades) -> pd.DataFrame:
@@ -186,7 +187,7 @@ def get_open_trades_uPnl(df_trades) -> pd.DataFrame:
         lambda row: compute_uPnl(openPrice=row['openPrice'], lastPrice=row['lastPrice'], isBuy=row['isBuy'], notional=row['notional']),
         axis=1
     )
-    
+
     return df_trades_prices
 
 if __name__ == '__main__':
