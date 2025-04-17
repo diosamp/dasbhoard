@@ -2,10 +2,8 @@ import requests
 import json
 import os
 from datetime import datetime
-from dotenv import load_dotenv
 import pandas as pd
 
-load_dotenv()
 
 def open_trades_endpoint():
     # Define the GraphQL endpoint URL
@@ -118,6 +116,7 @@ def load_open_trades(updateInterval_min, forceUpdate=False):
         print(f"Error loading data from file: {e}")
         return None
 
+
 def clean_open_trades(df: pd.DataFrame) -> pd.DataFrame:
     # Prepare trades data
     df['openPrice'] = df['openPrice'].astype(float) / 1e18
@@ -135,6 +134,7 @@ def clean_open_trades(df: pd.DataFrame) -> pd.DataFrame:
     df_clean = df.copy()
 
     return df_clean
+
 
 def latest_prices_endpoint() -> pd.DataFrame:
     # Define the API endpoint URL
@@ -160,6 +160,7 @@ def latest_prices_endpoint() -> pd.DataFrame:
         print(response.text)
         return None
 
+
 def latest_prices() -> pd.DataFrame:
     # Load data
     data = latest_prices_endpoint()
@@ -173,10 +174,12 @@ def latest_prices() -> pd.DataFrame:
 
     return df_prices
 
+
 def compute_uPnl(openPrice, lastPrice, isBuy, notional):
     abs_uPnl = (lastPrice - openPrice) / openPrice * notional
     direction_factor = 1 if isBuy else -1
     return direction_factor * abs_uPnl
+
 
 def get_open_trades_uPnl(df_trades) -> pd.DataFrame:
     # Load latest prices
@@ -189,6 +192,7 @@ def get_open_trades_uPnl(df_trades) -> pd.DataFrame:
     )
 
     return df_trades_prices
+
 
 if __name__ == '__main__':
     #print(open_trades_endpoint())

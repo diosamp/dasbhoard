@@ -2,7 +2,10 @@ import streamlit as st
 from src.data_processing import load_open_trades, clean_open_trades, get_open_trades_uPnl
 from src.viz import plt_bar_oi_isBuy, plt_bar_oiImbalance
 import time
+from dotenv import load_dotenv
 import matplotlib.pyplot as plt
+
+load_dotenv()
 
 def main():
     st.title("Trading Dashboard")
