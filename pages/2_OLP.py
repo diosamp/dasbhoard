@@ -2,10 +2,11 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 from src.vault import load_clean_olp_prices
-from src.utils.APR import APR_SMA_table
+from src.utils.APR import APR_p
 import numpy as np
 
 df = load_clean_olp_prices()
+prices = list(df['price'])
 
 # Calculate price changes
 today = pd.Timestamp.today().normalize()  # Normalize to start of day
@@ -122,56 +123,29 @@ else:
     # Display the plot in Streamlit
     st.pyplot(fig)
 
-df_APR_modelling = APR_SMA_table(
-    prices=list(df.sort_values('day', ascending=False)['price']),
-    N=30,
-    K=15
-)
+# Display price change cards in a row
+col1, col2, col3, col4 = st.columns(4)
 
-# Apply background color formatting based on value intensity
-def color_scale_background(val):
-    """
-    Takes a scalar and returns a string with css background-color property.
-    The color intensity is based on the value's position between global min and max.
-    Red for negative, Green for positive values.
-    """
-    if val is None:
-        return ''
-    try:
-        val_float = float(val)
-        if val_float == 0:
-            return 'background-color: #FFFFFF'
-        
-        # Get global min/max for scaling
-        all_values = df_APR_modelling.select_dtypes(include=['float64', 'int64']).values.ravel()
-        all_values = all_values[~np.isnan(all_values)]  # Remove NaN values
-        val_min, val_max = min(all_values), max(all_values)
-        
-        if val_float > 0:
-            # Scale from white to green (positive values)
-            intensity = val_float / val_max
-            intensity = min(intensity, 1.0)  # Cap at 1
-            return f'background-color: rgba(0, 255, 0, {intensity * 0.5})'
-        else:
-            # Scale from white to red (negative values)
-            intensity = val_float / val_min
-            intensity = min(intensity, 1.0)  # Cap at 1
-            return f'background-color: rgba(255, 0, 0, {abs(intensity) * 0.5})'
-    except (ValueError, TypeError):
-        return ''
+with col1:
+    st.metric(
+        "24h Change", 
+        f"{APR_p(prices, 1):.2f}%" if APR_p(prices, 1) is not None else "N/A",
+    )
 
-# Apply the styling to the dataframe
-styled_df = df_APR_modelling.style.applymap(color_scale_background)
+with col2:
+    st.metric(
+        "7d Change", 
+        f"{APR_p(prices, 7):.2f}%" if APR_p(prices, 7) is not None else "N/A"
+    )
 
-# Variables Description
-st.write('n: how many days back are used to extrapolate APR')
-st.write('- APR = ln(price[today] / price[n days ago]) * 365 / n')
-st.write('- if n is 30, it uses the price today and 30 days ago')
+with col3:
+    st.metric(
+        "15d Change", 
+        f"{APR_p(prices, 15):.2f}%" if APR_p(prices, 15) is not None else "N/A",
+    )
 
-
-st.write('k: how many APR data points are used of the Simple Moving Average')
-st.write('- the bigger k, produces a smoother APR change')
-st.write('- APR increases and decreases more slowly')
-
-# Display the styled dataframe
-st.write(styled_df)
+with col4:
+    st.metric(
+        "30d Change", 
+        f"{APR_p(prices, 30):.2f}%" if APR_p(prices, 30) is not None else "N/A",
+    )
