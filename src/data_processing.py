@@ -138,7 +138,7 @@ def clean_open_trades(df: pd.DataFrame) -> pd.DataFrame:
 
 def latest_prices_endpoint() -> pd.DataFrame:
     # Define the API endpoint URL
-    url = os.getenv('OST_PRICE_LISTENER')
+    url = "https://metadata-backend.ostium.io/PricePublish/latest-prices"
     
     # Set the headers
     headers = {
