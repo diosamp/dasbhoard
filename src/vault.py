@@ -54,7 +54,7 @@ def load_clean_olp_prices() -> pd.DataFrame:
 
     df.rename(columns={'sharePrice': 'price'}, inplace=True)
 
-    df['day'] = pd.to_datetime(df['day'])
+    df['day'] = pd.to_datetime(df['day'], format='%d-%m-%Y')
     df['price'] = pd.to_numeric(df['price']) / 1e18
 
     return df[['day', 'price']].copy()
